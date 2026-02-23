@@ -22,6 +22,8 @@
 ;the first important function is for calculation of distance between points, but some tests will be written first
 ;entire algorithm is based on distance calculation, so it is one of the most important functions
 
+;this approach seems not to be working
+;mostly getting IllegalArgumentExceptions
 (defn distance [p1 p2]
   (Math/sqrt (reduce + (fn [a b] (Math/sqrt (- a b))))))
 
