@@ -16,6 +16,6 @@
 
 (facts "distance-from-zero" (distance [0 0] [1 2]) => (roughly (Math/sqrt 5)))
 
-(facts "distance-is-symmetrical" (distance [1 2] [3 4]) => (distance [3 4] [1 2]))
+(facts "distance-is-symmetrical" (= (distance [1 2] [3 4]) (distance [3 4] [1 2])) => true)
 
 (facts "distance-empty-vectors" (distance [] []) => (throws Exception))
