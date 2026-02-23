@@ -5,7 +5,7 @@
 ;basic concepts are points, and dataset which is vector of points
 
 ;exmaple of simple dataset below
-(defn data
+(def data
   [[1 2]
    [3 1]
    [5 7]
@@ -22,4 +22,4 @@
 ;the first important function is for calculation of distance between points, but some tests will be written first
 ;entire algorithm is based on distance calculation, so it is one of the most important functions
 
-
+(defn distance [p1 p2] nil)
