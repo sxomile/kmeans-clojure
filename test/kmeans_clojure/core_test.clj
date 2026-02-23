@@ -10,7 +10,7 @@
 
 (facts "distance-between-points-different-dimensions" (distance [1 4] [1 2 6]) => (throws Exception))
 
-(facts "distance-between-self-returns-0" (distance [1 2] [1 2]) => 0)
+(facts "distance-between-self-returns-0" (distance [1 2] [1 2]) => 0.0)
 
 (facts "negative-and-positive-coordinates-distance" (distance [-1 -2] [1 2]) => (roughly (Math/sqrt 20)))
 
