@@ -28,6 +28,8 @@
 ;now 3 tests are failing: distance between empties (calculates 0 instead of Exception) and distance-between-points-different-dimensions (currently calculating some value instead of exception)
 ;distance-between-self-returns-0 fails because of type mismatch, since i see that more of a test design issue, i will modify the test for this use-case
 (defn distance [p1 p2]
+  (when (not= (count p1) (count p2)) (throw (Exception. "Points must be of the same dimension!")))
+  (when (some empty? [p1 p2]) (throw (Exception. "Points cannot be empty!")))
   (Math/sqrt (reduce + (map (fn [a b] (Math/pow (- a b) 2)) p1 p2))))
 
 
