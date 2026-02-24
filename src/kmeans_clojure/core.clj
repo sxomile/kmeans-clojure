@@ -32,6 +32,5 @@
 ;in order to determine which cluster it will be in
 ;distance can help with this part
 ;parameters will be the point and centroids;
-;one again, the tests will be written first
-(defn nearest-centroid [] nil)
+(defn nearest-centroid [point centroids] nil)
 

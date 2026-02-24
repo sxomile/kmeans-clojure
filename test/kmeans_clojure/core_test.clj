@@ -19,3 +19,11 @@
 (facts "distance-is-symmetrical" (= (distance [1 2] [3 4]) (distance [3 4] [1 2])) => true)
 
 (facts "distance-empty-vectors" (distance [] []) => (throws Exception))
+
+;nearest centroid
+(facts "nearest-centroid-basic-case" (nearest-centroid [1 1] [[0 0] [5 5]]) => [1 1])
+
+(facts "nearest-centroid-one-centroid" (nearest-centroid [1 1] [[0 0]]) => [0 0])
+
+(facts "nearest-centroid-3d" (nearest-centroid [1 1 1] [[0 0 0] [5 5 5]]) => [0 0 0])
+
