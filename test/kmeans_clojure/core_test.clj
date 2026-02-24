@@ -27,3 +27,7 @@
 
 (facts "nearest-centroid-3d" (nearest-centroid [1 1 1] [[0 0 0] [5 5 5]]) => [0 0 0])
 
+(facts "nearest-centroid-centroid-identical-to-point" (nearest-centroid [1 1] [[0 0] [1 1] [5 5]]) => [1 1])
+
+(facts "nearest-centroid-distance-tie" (nearest-centroid [0 1] [[0 0] [0 2]]) => [0 0])
+
