@@ -21,7 +21,7 @@
 (facts "distance-empty-vectors" (distance [] []) => (throws Exception))
 
 ;nearest centroid
-(facts "nearest-centroid-basic-case" (nearest-centroid [1 1] [[0 0] [5 5]]) => [1 1])
+(facts "nearest-centroid-basic-case" (nearest-centroid [1 1] [[0 0] [5 5]]) => [0 0])
 
 (facts "nearest-centroid-one-centroid" (nearest-centroid [1 1] [[0 0]]) => [0 0])
 
