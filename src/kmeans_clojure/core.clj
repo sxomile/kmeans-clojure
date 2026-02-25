@@ -32,5 +32,8 @@
 ;in order to determine which cluster it will be in
 ;distance can help with this part
 ;parameters will be the point and centroids;
-(defn nearest-centroid [point centroids] nil)
+(defn nearest-centroid [point centroids]
+  (let [distances (map #(distance point %) centroids)
+        min-index (.indexOf distances (apply min distances))]
+    (nth centroids min-index)))
 
