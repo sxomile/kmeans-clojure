@@ -34,7 +34,7 @@
 ;assign-clusters
 (facts "assign-clusters-basic-case" (assign-clusters [[0 0] [1 1] [9 9] [10 10]] [[0 0] [10 10]])
        => {[0 0] [[0 0] [1 1]]
-           [9 9] [[9 9] [10 10]]})
+           [10 10] [[9 9] [10 10]]})
 
 (facts "assign-clusters-3d" (assign-clusters [[0 0 0] [1 1 1] [9 9 9] [10 10 10]] [[0 0 0] [10 10 10]])
        => {[0 0 0] [[0 0 0] [1 1 1]]

@@ -40,5 +40,7 @@
 ;in order not to iterate through every point every time, it would make life easier to use nearest-centroid fun to
 ;help us build function that will assign vector of points to different clusters
 
-(defn assign-clusters [points centroids] nil)
+(defn assign-clusters [points centroids]
+  (when (or (empty? points) (empty? centroids)) (throw (Exception. "")))
+  (group-by #(nearest-centroid % centroids) points))
 
