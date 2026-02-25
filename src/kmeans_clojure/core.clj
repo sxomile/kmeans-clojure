@@ -37,3 +37,8 @@
         min-index (.indexOf distances (apply min distances))]
     (nth centroids min-index)))
 
+;in order not to iterate through every point every time, it would make life easier to use nearest-centroid fun to
+;help us build function that will assign vector of points to different clusters
+
+(defn assign-clusters [] nil)
+
