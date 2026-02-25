@@ -33,15 +33,15 @@
 
 ;assign-clusters
 (facts "assign-clusters-basic-case" (assign-clusters [[0 0] [1 1] [9 9] [10 10]] [[0 0] [10 10]])
-       => {0 [[0 0] [1 1]]
-           1 [[9 9] [10 10]]})
+       => {[0 0] [[0 0] [1 1]]
+           [9 9] [[9 9] [10 10]]})
 
 (facts "assign-clusters-3d" (assign-clusters [[0 0 0] [1 1 1] [9 9 9] [10 10 10]] [[0 0 0] [10 10 10]])
-       => {0 [[0 0 0] [1 1 1]]
-           2 [[9 9 9] [10 10 10]]})
+       => {[0 0 0] [[0 0 0] [1 1 1]]
+           [10 10 10] [[9 9 9] [10 10 10]]})
 
 (facts "assign-clusters-one-centroid" (assign-clusters [[0 0] [1 1] [10 10]] [[0 0]])
-       => {0 [[0 0] [1 1] [10 10]]})
+       => {[0 0] [[0 0] [1 1] [10 10]]})
 
 (facts "assign-clusters-no-points" (assign-clusters [] [[0 0] [1 1]])
        => (throws Exception))                               ;is this really a possible use-case?
