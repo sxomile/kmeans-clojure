@@ -45,4 +45,5 @@
   (group-by #(nearest-centroid % centroids) points))
 
 ;we also need a mean function, which is essential for recalculation of centroids
-(defn mean [values] nil)
+(defn mean [values]
+  (/ (reduce + values) (count values)))
