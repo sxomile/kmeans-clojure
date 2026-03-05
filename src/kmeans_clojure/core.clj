@@ -44,3 +44,5 @@
   (when (or (empty? points) (empty? centroids)) (throw (Exception. "")))
   (group-by #(nearest-centroid % centroids) points))
 
+;we also need a mean function, which is essential for recalculation of centroids
+(defn mean [values] nil)

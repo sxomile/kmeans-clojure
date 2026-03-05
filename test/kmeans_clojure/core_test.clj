@@ -48,3 +48,8 @@
 
 (facts "assign-clusters-no-centroids" (assign-clusters [[0 0] [1 1]] [])
        => (throws Exception))                               ;if this happens something is really messed up
+
+;mean
+(facts "mean-of-numbers" (mean [1 3 5 7 9]) => 5)
+
+(facts "mean-empty" (mean []) => (throws Exception))
