@@ -69,5 +69,12 @@
 ;now there are enough functions to define the step of k-means algorithm
 ;one step means goes like: assign clusters to the points; recalculate centroids
 ;result will be a map
-(defn kmeans-step [points centroids] nil)
+(defn kmeans-step [points centroids]
+  (let [clusters (assign-clusters points centroids)
+        new-centroids (recompute-centroids clusters)]
+    {:clusters clusters
+     :centroids new-centroids}))
+
+;now we have all the functions we need for full implementation
+
 
