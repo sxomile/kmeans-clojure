@@ -128,3 +128,22 @@
 
 (facts "init-centroids-k-greater-then-number-of-centroids"
       (count (init-centroids points 10)) => 4)
+
+;kmeans-step
+(facts "kmeans-step-correctly-assign"
+      (let [points [[1 1] [2 2] [9 9] [10 10]]
+            centroids [[1 1] [10 10]]
+            result (kmeans-step points centroids)]
+        (:clusters result) => {[1 1] [[1 1] [2 2]]
+                               [10 10] [[9 9] [10 10]]}
+        (:centroids result) => [[1.5 1.5] [9.5 9.5]]))
+
+(facts "kmeans-step-single-cluster"
+      (let [points [[1 2] [3 4]]
+            centroids [[0 0]]
+            result (kmeans-step points centroids)]
+        (:clusters result) => {[0 0] [[1 2] [3 4]]}
+        (:centroids result) => [[2.0 3.0]]))
+
+
+

@@ -64,7 +64,10 @@
   (= old-centroids new-centroids))
 
 ;there needs to be a function to initialize centroids in order to start with the algorithm
-(defn init-centroids [points k] nil)
+(defn init-centroids [points k] (take k (shuffle points)))
 
-
+;now there are enough functions to define the step of k-means algorithm
+;one step means goes like: assign clusters to the points; recalculate centroids
+;result will be a map
+(defn kmeans-step [points centroids] nil)
 
