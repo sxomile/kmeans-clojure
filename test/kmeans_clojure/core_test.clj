@@ -70,3 +70,26 @@
 (facts "mean-point-decimal-result" (mean-point [[1 1] [2 2]])
       => [1.5 1.5])
 
+;recompute-centroids
+
+(facts "recompute-centroids-simple-clusters"
+       (recompute-centroids
+        {[1 1] [[1 1] [3 3]]
+         [10 10] [[9 9] [11 11]]})
+      => [[2 2] [10 10]])
+
+(facts "recompute-centroids-single-point-cluster"
+      (recompute-centroids
+        {[5 5] [[5 5]]})
+      => [[5 5]])
+
+(facts "recompute-centroids-multiple-clusters"
+      (recompute-centroids
+        {[1 1] [[1 1] [3 3]]
+         [10 10] [[10 10] [14 14]]
+         [2 2] [[2 4] [6 8]]})
+      => [[2 2] [12 12] [4 6]])
+
+(facts "recompute-centroids-empty-clusters"
+      (recompute-centroids {})
+      => [])

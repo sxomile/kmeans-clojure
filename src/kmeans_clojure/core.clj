@@ -56,8 +56,8 @@
     (vec (for [i (range dim)]
            (mean (map #(nth % i) points))))))
 
-
-
+;centroids need to be recomputed after the initial initialization
+(defn recompute-centroids [clusters] nil)
 
 
 
