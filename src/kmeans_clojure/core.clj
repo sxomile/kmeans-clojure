@@ -49,7 +49,10 @@
   (/ (reduce + values) (count values)))
 
 ;based on simple mean function, we can now use that fun to calculate mean of n-dimensional points
-(defn mean-point [points] nil)
+(defn mean-point [points]
+  (let [dim (count (first points))]
+    (vec (for [i (range dim)]
+           (mean (map #(nth % i) points))))))
 
 
 
