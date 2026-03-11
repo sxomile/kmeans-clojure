@@ -46,6 +46,8 @@
 
 ;we also need a mean function, which is essential for recalculation of centroids
 (defn mean [values]
+  (when (= (count values) 0)
+    (throw (Exception. "Empty values passed to mean function!")))
   (/ (double (reduce + values)) (count values)))
 
 ;based on simple mean function, we can now use that fun to calculate mean of n-dimensional points
