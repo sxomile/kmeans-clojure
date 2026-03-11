@@ -59,6 +59,10 @@
 ;centroids need to be recomputed after the initial initialization
 (defn recompute-centroids [clusters] (mapv (fn [[_ points]] (mean-point points)) clusters))
 
+;when centroids stop converging, algorithm is done. so we need a function to determine if it finished converging
+(defn converged? [old-centroids new-centroids]
+  (= old-centroids new-centroids))
+
 
 
 

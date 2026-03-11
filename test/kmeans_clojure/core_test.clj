@@ -93,3 +93,22 @@
 (facts "recompute-centroids-empty-clusters"
       (recompute-centroids {})
       => [])
+
+;converged?
+(facts "converged-basic-true"
+      (converged? [[1 2] [3 4]]
+                  [[1 2] [3 4]]) => true)
+
+(facts "converged-basic-false"
+      (converged? [[1 2] [3 4]]
+                  [[1 2] [4 3]]) => false)
+
+(facts "converged-empty-true"
+      (converged? [] []) => true)
+
+(facts "converged-empty-false"
+      (converged? [[1 2]] []) => false)
+
+(facts "false-different-dimensions"
+      (converged? [[1 2] [3 4]]
+                  [[1 2]]) => false)
