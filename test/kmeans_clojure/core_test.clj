@@ -53,3 +53,20 @@
 (facts "mean-of-numbers" (mean [1 3 5 7 9]) => 5)
 
 (facts "mean-empty" (mean []) => (throws Exception))
+
+;mean-point
+(facts "mean-point-2d" (mean-point [[1 2] [3 4]])
+       => [2 3])
+
+(facts "mean-point-3d" (mean-point [[1 2 3] [4 5 6] [7 8 9]])
+      => [4 5 6])
+
+(facts "mean-point-single-point" (mean-point [[5 7]])
+      => [5 7])
+
+(facts "mean-point-negative" (mean-point [[-1 -2] [1 2]])
+      => [0 0])
+
+(facts "mean-point-decimal-result" (mean-point [[1 1] [2 2]])
+      => [1.5 1.5])
+
