@@ -112,3 +112,19 @@
 (facts "false-different-dimensions"
       (converged? [[1 2] [3 4]]
                   [[1 2]]) => false)
+
+;init-centroids
+(def points
+  [[1 2] [3 4] [5 6] [7 8]])
+
+(facts "init-centroids-returns-k"
+      (count (init-centroids points 2)) => 2)
+
+(facts "init-centroids-from-original-dataset"
+      (every? (set points) (init-centroids points 3)) => true)
+
+(facts "init-centroids-k-equals-number-of-points"
+      (set (init-centroids points 4)) => (set points))
+
+(facts "init-centroids-k-greater-then-number-of-centroids"
+      (count (init-centroids points 10)) => 4)

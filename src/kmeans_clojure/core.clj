@@ -63,6 +63,8 @@
 (defn converged? [old-centroids new-centroids]
   (= old-centroids new-centroids))
 
+;there needs to be a function to initialize centroids in order to start with the algorithm
+(defn init-centroids [points k] nil)
 
 
 
