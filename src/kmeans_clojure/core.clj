@@ -77,7 +77,10 @@
 
 ;now we have all the functions we need for full implementation of the algorithm4
 ;kmeans function is basically just supposet to "orchestrate" previously written functions
-(defn kmeans [points k max-iterations]
+(defn kmeans
+  ([points k]
+   (kmeans points k 1000))
+  ([points k max-iterations]
   (loop [centroids (init-centroids points k)
          i 0]
     (let [result (kmeans-step points centroids)
@@ -87,7 +90,7 @@
               (>= i max-iterations))
         {:clusters clusters
          :centroids new-centroids}
-        (recur new-centroids (inc i))))))
+        (recur new-centroids (inc i)))))))
 
 
 
