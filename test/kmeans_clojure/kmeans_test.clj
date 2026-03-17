@@ -1,7 +1,7 @@
-(ns kmeans-clojure.core-test
+(ns kmeans-clojure.kmeans-test
   (:require [clojure.test :refer :all]
             [midje.sweet :refer [facts => throws roughly]]
-            [kmeans-clojure.core :refer :all]))
+            [kmeans-clojure.kmeans :refer :all]))
 
 ;distance tests
 (facts "distance-between-points-2d" (distance [1 2] [2 1]) =>  (roughly (Math/sqrt 2)))
