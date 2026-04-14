@@ -3,27 +3,40 @@
 
 ;idea is to use quil for visual representation of data
 
-;github code is now confgured just to draw some given points
+;introducing atoms
+(defonce state (atom {:points []}))
 
-(def points
-  [{:x 100 :y 150}
-   {:x 200 :y 80}
-   {:x 300 :y 220}
-   {:x 400 :y 180}])
+(def width 500)
+(def height 400)
+(def point-count 10)
+
+;for now i want points to actually be random, width and height are now variables, so the dots don't escape the window
+(defn random-point []
+  {:x (rand-int width)
+   :y (rand-int height)})
 
 (defn setup []
-  (q/background 255))
+  (reset! state
+          {:points (repeatedly point-count random-point)}))
+
+;this helper function is for moving points around the screen
+;introducing moving points, which will be important in some of the future steps (animation of algo)
+(defn move-point [{:keys [x y]}]
+  {:x (-> x (+ (- (rand-int 5) 2)) (max 0) (min width))     ;to move +- 2 px
+   :y (-> y (+ (- (rand-int 5) 2)) (max 0) (min height))})
 
 (defn draw []
-  (q/background 255) ;; clear screen every frame
+  (swap! state update :points #(map move-point %))
+  (q/background 255)
   (q/fill 0)
   (q/stroke 0)
-  (doseq [{:keys [x y]} points]
+  (doseq [{:keys [x y]} (:points @state)]
     (q/ellipse x y 10 10)))
 
 (defn start []
   (q/defsketch example
                :title "K-means visual"
-               :size [500 400]
+               :size [width height]
                :setup setup
                :draw draw))
+
