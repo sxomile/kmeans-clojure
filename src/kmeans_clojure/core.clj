@@ -1,4 +1,10 @@
-(ns kmeans-clojure.core)
+(ns kmeans-clojure.core
+  (:require [kmeans-clojure.csv :as csv-ops])
+  (:require [kmeans-clojure.kmeans :as k]))
+
+(defn -main []
+  (println "woohoo")                                        ;project couldn't run without main
+  (csv-ops/load-points-via-dialog))                         ;manually tested, since i can't even run it from repl
 
 ;needed to refactor since code is getting big
 
