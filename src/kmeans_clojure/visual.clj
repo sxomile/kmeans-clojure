@@ -2,25 +2,28 @@
   (:require [quil.core :as q]))
 
 ;idea is to use quil for visual representation of data
-;code below is copied from quil github readme just to make sure it works - and it does
+
+;github code is now confgured just to draw some given points
+
+(def points
+  [{:x 100 :y 150}
+   {:x 200 :y 80}
+   {:x 300 :y 220}
+   {:x 400 :y 180}])
+
 (defn setup []
-  (q/frame-rate 1)                    ;; Set framerate to 1 FPS
-  (q/background 200))                 ;; Set the background colour to
-;; a nice shade of grey.
+  (q/background 255))
+
 (defn draw []
-  (q/stroke (q/random 255))             ;; Set the stroke colour to a random grey
-  (q/stroke-weight (q/random 10))       ;; Set the stroke thickness randomly
-  (q/fill (q/random 255))               ;; Set the fill colour to a random grey
+  (q/background 255) ;; clear screen every frame
+  (q/fill 0)
+  (q/stroke 0)
+  (doseq [{:keys [x y]} points]
+    (q/ellipse x y 10 10)))
 
-  (let [diam (q/random 100)             ;; Set the diameter to a value between 0 and 100
-        x    (q/random (q/width))       ;; Set the x coord randomly within the sketch
-        y    (q/random (q/height))]     ;; Set the y coord randomly within the sketch
-    (q/ellipse x y diam diam)))         ;; Draw a circle at x y with the correct diameter
-
-(defn start-sketch []
+(defn start []
   (q/defsketch example
-               :title "Oh so many grey circles"
-               :settings #(q/smooth 2)
+               :title "K-means visual"
+               :size [500 400]
                :setup setup
-               :draw draw
-               :size [323 200]))
+               :draw draw))
