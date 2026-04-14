@@ -1,6 +1,7 @@
 (ns kmeans-clojure.core
-  (:require [kmeans-clojure.csv :as csv-ops])
-  (:require [kmeans-clojure.kmeans :as k]))
+  (:require [kmeans-clojure.csv :as csv-ops]
+            [kmeans-clojure.kmeans :as k]
+            [kmeans-clojure.visual :as v]))
 
 (defn -main []
   (println "woohoo")                                        ;project couldn't run without main
