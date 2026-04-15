@@ -1,5 +1,6 @@
 (ns kmeans-clojure.visual
-  (:require [quil.core :as q]))
+  (:require [quil.core :as q]
+            [kmeans-clojure.kmeans :as k]))
 
 ;idea is to use quil for visual representation of data
 
@@ -12,12 +13,14 @@
 (def point-count 40)
 (def centroid-count 3)
 
+(defn point->vec [{:keys [x y]}]
+  [x y])                                                    ;algo expects vectors
+
 (defn random-color []
   [(rand-int 256) (rand-int 256) (rand-int 256)])
 
 (defn random-centroid []
-  {:x (rand-int width)
-   :y (rand-int height)})
+  [(rand-int width) (rand-int height)])                     ;to match expected format
 
 ;for now i want points to actually be random, width and height are now variables, so the dots don't escape the window
 (defn random-point []
@@ -28,7 +31,7 @@
   (let [centroids (vec (repeatedly centroid-count random-centroid))
         points (vec
                  (map (fn [p]
-                        (assoc p :centroid (rand-nth centroids)))
+                        (assoc p :centroid (k/nearest-centroid (point->vec p) centroids)))
                       (repeatedly point-count random-point)))]
     (reset! centroid-colors
             (into {}
@@ -58,7 +61,7 @@
     (let [color (get @centroid-colors centroid [0 0 0])]
       (apply q/fill color)
       (q/ellipse x y 8 8)))
-  (doseq [{:keys [x y] :as c} (:centroids @state)]
+  (doseq [[x y :as c] (:centroids @state)]                  ;change of format to be compatible with algo
     (let [color (get @centroid-colors c [0 0 0])]
       (apply q/fill color)
       (q/stroke 0)
@@ -68,6 +71,8 @@
 ;this is the end of mocking and playground stage, next step is to try to actually group dots
 ;then get closer and closer to actual integration of algorithm into visuals
 
+;now dots get the color of the closest centroid, although it doesn't change while they move
+
 (defn start []
   (q/defsketch example
                :title "K-means visual"
@@ -75,20 +80,6 @@
                :setup setup
                :draw draw
                :key-pressed key-pressed))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
