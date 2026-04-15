@@ -4,24 +4,38 @@
 ;idea is to use quil for visual representation of data
 
 ;introducing atoms
-(defonce state (atom {:points []}))
+(defonce state (atom {:points [] :centroids []}))
+(defonce centroid-colors (atom {}))
 
 (def width 500)
 (def height 400)
-(def point-count 10)
+(def point-count 40)
+(def centroid-count 3)
 
 (defn random-color []
   [(rand-int 256) (rand-int 256) (rand-int 256)])
 
+(defn random-centroid []
+  {:x (rand-int width)
+   :y (rand-int height)})
+
 ;for now i want points to actually be random, width and height are now variables, so the dots don't escape the window
 (defn random-point []
   {:x (rand-int width)
-   :y (rand-int height)
-   :color (random-color)})
+   :y (rand-int height)})
 
 (defn setup []
-  (reset! state
-          {:points (repeatedly point-count random-point)}))
+  (let [centroids (vec (repeatedly centroid-count random-centroid))
+        points (vec
+                 (map (fn [p]
+                        (assoc p :centroid (rand-nth centroids)))
+                      (repeatedly point-count random-point)))]
+    (reset! centroid-colors
+            (into {}
+                  (map (fn [c] [c (random-color)]) centroids)))
+    (reset! state
+            {:points points
+             :centroids centroids})))
 
 ;this helper function is for moving points around the screen
 ;introducing moving points, which will be important in some of the future steps (animation of algo)
@@ -34,16 +48,25 @@
 ;looks pretty good honestly
 (defn key-pressed []
   (when (= (q/key-as-keyword) :r)
-    (swap! state assoc
-           :points (repeatedly point-count random-point))))
+    (setup)))
 
 (defn draw []
   (swap! state update :points #(map move-point %))
   (q/background 255)
   (q/stroke 0)
-  (doseq [{:keys [x y color]} (:points @state)]
-    (apply q/fill color)
-    (q/ellipse x y 10 10)))
+  (doseq [{:keys [x y centroid]} (:points @state)]
+    (let [color (get @centroid-colors centroid [0 0 0])]
+      (apply q/fill color)
+      (q/ellipse x y 8 8)))
+  (doseq [{:keys [x y] :as c} (:centroids @state)]
+    (let [color (get @centroid-colors c [0 0 0])]
+      (apply q/fill color)
+      (q/stroke 0)
+      (q/ellipse x y 16 16))))
+;ok finally the "centroids" are visible
+;other dots just pick one color from each centroid
+;this is the end of mocking and playground stage, next step is to try to actually group dots
+;then get closer and closer to actual integration of algorithm into visuals
 
 (defn start []
   (q/defsketch example
@@ -52,4 +75,24 @@
                :setup setup
                :draw draw
                :key-pressed key-pressed))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
