@@ -5,7 +5,7 @@
 ;idea is to use quil for visual representation of data
 
 ;introducing atoms
-(defonce state (atom {:points [] :centroids []}))
+(defonce state (atom {:points [] :centroids {}}))
 (defonce centroid-colors (atom {}))
 
 (def width 500)
@@ -27,63 +27,77 @@
   {:x (rand-int width)
    :y (rand-int height)})
 
+(defn ensure-centroid-colors! [centroids]
+  (doseq [c centroids]
+    (when-not (contains? @centroid-colors c)
+      (swap! centroid-colors assoc c (random-color)))))
+
 (defn setup []
   (let [centroids (vec (repeatedly centroid-count random-centroid))
-        points (vec
-                 (map (fn [p]
-                        (assoc p :centroid (k/nearest-centroid (point->vec p) centroids)))
-                      (repeatedly point-count random-point)))]
+        points (vec (repeatedly point-count random-point))]
     (reset! centroid-colors
             (into {}
-                  (map (fn [c] [c (random-color)]) centroids)))
+                  (map (fn [i] [i (random-color)])
+                       (range centroid-count))))
     (reset! state
-            {:points points
-             :centroids centroids})))
+            {:points    points
+             :centroids centroids
+             :clusters  {}})
+    (q/frame-rate 1)))
 
 ;this helper function is for moving points around the screen
 ;introducing moving points, which will be important in some of the future steps (animation of algo)
-(defn move-point [{:keys [x y] :as point}]
-  (assoc point                                              ;this part was making issues with coloring, returned some nils so it threw exceptions
-    :x (-> x (+ (- (rand-int 5) 2)) (max 0) (min width))    ;to move +- 2 px
-    :y (-> y (+ (- (rand-int 5) 2)) (max 0) (min height))))
+;(defn move-point [{:keys [x y] :as point}]
+;(assoc point                                                ;this part was making issues with coloring, returned some nils so it threw exceptions
+  ;:x (-> x (+ (- (rand-int 5) 2)) (max 0) (min width))    ;to move +- 2 px
+  ;  :y (-> y (+ (- (rand-int 5) 2)) (max 0) (min height))
+  ;    ))
 
-;using r for example to change the state of points, i may change the key later
-;looks pretty good honestly
-(defn key-pressed []
-  (when (= (q/key-as-keyword) :r)
-    (setup)))
+  ;using r for example to change the state of points, i may change the key later
+  ;looks pretty good honestly
+  (defn key-pressed []
+    (when (= (q/key-as-keyword) :r)
+      (setup)))
 
-(defn draw []
-  (swap! state update :points #(map move-point %))
-  (q/background 255)
-  (q/stroke 0)
-  (doseq [{:keys [x y centroid]} (:points @state)]
-    (let [color (get @centroid-colors centroid [0 0 0])]
-      (apply q/fill color)
-      (q/ellipse x y 8 8)))
-  (doseq [[x y :as c] (:centroids @state)]                  ;change of format to be compatible with algo
-    (let [color (get @centroid-colors c [0 0 0])]
-      (apply q/fill color)
-      (q/stroke 0)
-      (q/ellipse x y 16 16))))
-;ok finally the "centroids" are visible
-;other dots just pick one color from each centroid
-;this is the end of mocking and playground stage, next step is to try to actually group dots
-;then get closer and closer to actual integration of algorithm into visuals
+  (defn update-kmeans []
+    (let [current-state @state
+          fixed-points (:points current-state)
+          point-vectors (mapv point->vec fixed-points)
+          result (k/kmeans-step point-vectors
+                                (:centroids current-state))
+          new-centroids (:centroids result)
+          clusters (:clusters result)]
+      (ensure-centroid-colors! new-centroids)
+      (reset! state
+              {:points    fixed-points
+               :centroids new-centroids
+               :clusters  clusters})))
+
+  (defn draw []
+
+    (update-kmeans)
+    (q/background 255)
+
+    (doseq [[idx [centroid pts]] (map-indexed vector (:clusters @state))]
+      (let [color (get @centroid-colors idx [0 0 0])]
+        (apply q/fill color)
+        (q/stroke 0)
+        (doseq [[x y] pts]
+          (q/ellipse x y 8 8))))
+
+    (doseq [[idx [x y]] (map-indexed vector (:centroids @state))]
+      (let [color (get @centroid-colors idx [0 0 0])]       ;with these indexes I am making sure that all the colors of the cluster have the same color, and not just some random one until the end
+        (apply q/fill color)
+        (q/stroke 0)
+        (q/ellipse x y 16 16))))
 
 ;now dots get the color of the closest centroid, although it doesn't change while they move
+;i mean it works but sometimes 2 clusters randomly switch colors, probably because clusters are unordered as of right now
 
-(defn start []
-  (q/defsketch example
-               :title "K-means visual"
-               :size [width height]
-               :setup setup
-               :draw draw
-               :key-pressed key-pressed))
-
-
-
-
-
-
-
+  (defn start []
+    (q/defsketch example
+                 :title "K-means visual"
+                 :size [width height]
+                 :setup setup
+                 :draw draw
+                 :key-pressed key-pressed))
