@@ -1,6 +1,7 @@
 (ns kmeans-clojure.visual
   (:require [quil.core :as q]
-            [kmeans-clojure.kmeans :as k]))
+            [kmeans-clojure.kmeans :as k]
+            [kmeans-clojure.csv :as csv-ops]))
 
 ;idea is to use quil for visual representation of data
 
@@ -16,11 +17,11 @@
 (defn point->vec [{:keys [x y]}]
   [x y])                                                    ;algo expects vectors
 
+(defn vec->point [[x y]]
+  {:x x :y y})
+
 (defn random-color []
   [(rand-int 256) (rand-int 256) (rand-int 256)])
-
-(defn random-centroid []
-  [(rand-int width) (rand-int height)])                     ;to match expected format
 
 ;for now i want points to actually be random, width and height are now variables, so the dots don't escape the window
 (defn random-point []
@@ -33,8 +34,12 @@
       (swap! centroid-colors assoc c (random-color)))))
 
 (defn setup []
-  (let [centroids (vec (repeatedly centroid-count random-centroid))
-        points (vec (repeatedly point-count random-point))]
+  (let [csv-data (csv-ops/load-points-via-dialog)           ;this works, but it doesn't put points in perspective, so everything happens in the top left corner since number are small
+        points (if (and csv-data (seq csv-data))
+                 (vec (map vec->point csv-data)) ;; CSV → {:x :y}
+                 (vec (repeatedly point-count random-point)))
+        point-vecs (mapv point->vec points)
+        centroids (vec (k/init-centroids point-vecs centroid-count))] ;in order to take some actual points as centroids
     (reset! centroid-colors
             (into {}
                   (map (fn [i] [i (random-color)])
@@ -88,8 +93,6 @@
         (q/stroke 0)
         (q/ellipse x y 16 16))))
 
-;now dots get the color of the closest centroid, although it doesn't change while they move
-;i mean it works but sometimes 2 clusters randomly switch colors, probably because clusters are unordered as of right now
 
   (defn start []
     (q/defsketch example
