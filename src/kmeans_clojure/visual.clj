@@ -45,14 +45,6 @@
              :clusters  {}})
     (q/frame-rate 1)))
 
-;this helper function is for moving points around the screen
-;introducing moving points, which will be important in some of the future steps (animation of algo)
-;(defn move-point [{:keys [x y] :as point}]
-;(assoc point                                                ;this part was making issues with coloring, returned some nils so it threw exceptions
-  ;:x (-> x (+ (- (rand-int 5) 2)) (max 0) (min width))    ;to move +- 2 px
-  ;  :y (-> y (+ (- (rand-int 5) 2)) (max 0) (min height))
-  ;    ))
-
   ;using r for example to change the state of points, i may change the key later
   ;looks pretty good honestly
   (defn key-pressed []
@@ -78,14 +70,19 @@
     (update-kmeans)
     (q/background 255)
 
-    (doseq [[idx [centroid pts]] (map-indexed vector (:clusters @state))]
+    (doseq [[idx [centroid pts]]
+            (map-indexed vector
+                         (sort-by (fn [[centroid _]] centroid)
+                                  (:clusters @state)))]
       (let [color (get @centroid-colors idx [0 0 0])]
         (apply q/fill color)
         (q/stroke 0)
         (doseq [[x y] pts]
           (q/ellipse x y 8 8))))
 
-    (doseq [[idx [x y]] (map-indexed vector (:centroids @state))]
+    (doseq [[idx [x y]]
+            (map-indexed vector
+                         (sort-by identity (:centroids @state)))] ;once this is and clusters are sorted, no more random color switches occur
       (let [color (get @centroid-colors idx [0 0 0])]       ;with these indexes I am making sure that all the colors of the cluster have the same color, and not just some random one until the end
         (apply q/fill color)
         (q/stroke 0)
