@@ -1,7 +1,6 @@
 (ns kmeans-clojure.visual
   (:require [quil.core :as q]
-            [kmeans-clojure.kmeans :as k]
-            [kmeans-clojure.csv :as csv-ops]))
+            [kmeans-clojure.kmeans :as k]))
 
 ;idea is to use quil for visual representation of data
 
@@ -57,21 +56,17 @@
     (when-not (contains? @centroid-colors c)
       (swap! centroid-colors assoc c (random-color)))))
 
-(defn setup []
-  (let [csv-data (csv-ops/load-points-via-dialog)
-
-        ;raw CSV points or fallback random dataset
-        raw-points (if (and csv-data (seq csv-data))
-                     csv-data
-                     (repeatedly point-count
-                                 #(vector (rand-int 100)
-                                          (rand-int 100))))
+(defn setup [raw-points]
+  (let [points-data (if (and raw-points (seq raw-points))
+                      raw-points
+                      (repeatedly point-count
+                                  #(vector (rand-int 100) (rand-int 100)))) ;since csv import should be handled from ui, this need to be able to accept points and csv import should be removed from here
 
         ;compute scaling bounds
-        b (bounds raw-points)
+        b (bounds points-data)
 
         ;scale raw points to fit canvas
-        points (vec (map (partial scale-point b) raw-points))
+        points (vec (map (partial scale-point b) points-data))
 
         ;convert scaled points into vectors for kmeans
         point-vecs (mapv point->vec points)
@@ -93,13 +88,6 @@
              :bounds b})
 
     (q/frame-rate 1)))
-
-
-  ;using r for example to change the state of points, i may change the key later
-  ;looks pretty good honestly
-  (defn key-pressed []
-    (when (= (q/key-as-keyword) :r)
-      (setup)))
 
   (defn update-kmeans []
     (let [current-state @state
@@ -140,10 +128,9 @@
         (q/ellipse x y 16 16))))
 
 
-  (defn start []
+  (defn start [raw-points]
     (q/defsketch example
                  :title "K-means visual"
                  :size [width height]
-                 :setup setup
-                 :draw draw
-                 :key-pressed key-pressed))
+                 :setup (fn [] (setup raw-points))
+                 :draw draw))                               ;don't really see a need for key pressed now

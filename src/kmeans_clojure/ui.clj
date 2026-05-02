@@ -55,15 +55,20 @@
                               (if (and points (seq points))
                                 (do
                                   (swap! app-state assoc :points points) ;save state
-
                                   (.setText info-label (dataset-info points)) ;update label
-
                                   (.setVisible visualize-btn (is-2d? points))) ;show visualize button only if 2D
 
                                 ; if user canceled or empty file
                                 (do
                                   (.setText info-label "No dataset loaded")
                                   (.setVisible visualize-btn false)))))))
+
+    (.addActionListener visualize-btn
+                        (proxy [java.awt.event.ActionListener] []
+                          (actionPerformed [_]
+                            (let [points (:points @app-state)]
+                              (when (and points (seq points))
+                                (visual/start points))))))
 
     ; label center
     (.setAlignmentX info-label 0.5)
