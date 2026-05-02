@@ -4,6 +4,18 @@
   (:import [javax.swing JFrame JButton JLabel JPanel BoxLayout Box BorderFactory]
            [java.awt Dimension Color Font]))
 
+(defonce app-state (atom {:points nil}))
+
+(defn is-2d? [points]
+  (and (seq points)
+       (= 2 (count (first points)))))                       ;I will show visualize button only if data is 2d
+
+(defn dataset-info [points]
+  (if (nil? points)
+    "No dataset loaded"
+    (str "Points: " (count points)
+         " | Dimensions: " (count (first points)))))
+
 (defn create-ui []
   (let [frame (JFrame. "K-Means App")
         root (JPanel.)                                      ; outer panel (background)
@@ -34,6 +46,24 @@
       (.setForeground btn Color/WHITE)
       (.setMaximumSize btn (Dimension. 200 40))
       (.setAlignmentX btn 0.5))
+
+
+    (.addActionListener load-btn
+                        (proxy [java.awt.event.ActionListener] []
+                          (actionPerformed [_]
+                            (let [points (csv/load-points-via-dialog)]
+                              (if (and points (seq points))
+                                (do
+                                  (swap! app-state assoc :points points) ;save state
+
+                                  (.setText info-label (dataset-info points)) ;update label
+
+                                  (.setVisible visualize-btn (is-2d? points))) ;show visualize button only if 2D
+
+                                ; if user canceled or empty file
+                                (do
+                                  (.setText info-label "No dataset loaded")
+                                  (.setVisible visualize-btn false)))))))
 
     ; label center
     (.setAlignmentX info-label 0.5)
