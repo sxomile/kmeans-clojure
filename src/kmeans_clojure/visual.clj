@@ -14,7 +14,6 @@
 (def width 500)
 (def height 400)
 (def point-count 40)
-(def centroid-count 3)
 
 (defn point->vec [{:keys [x y]}]
   [x y])                                                    ;algo expects vectors
@@ -56,7 +55,7 @@
     (when-not (contains? @centroid-colors c)
       (swap! centroid-colors assoc c (random-color)))))
 
-(defn setup [raw-points]
+(defn setup [raw-points k-val]
   (let [points-data (if (and raw-points (seq raw-points))
                       raw-points
                       (repeatedly point-count
@@ -72,13 +71,13 @@
         point-vecs (mapv point->vec points)
 
         ;initialize centroids from scaled points
-        centroids (vec (k/init-centroids point-vecs centroid-count))]
+        centroids (vec (k/init-centroids point-vecs k-val))]
 
     ;assign stable colors by cluster index
     (reset! centroid-colors
             (into {}
                   (map (fn [i] [i (random-color)])
-                       (range centroid-count))))
+                       (range k-val))))
 
     ;initialize state
     (reset! state
@@ -89,7 +88,7 @@
 
     (q/frame-rate 1)))
 
-  (defn update-kmeans []
+(defn update-kmeans []
     (let [current-state @state
           fixed-points (:points current-state)
           point-vectors (mapv point->vec fixed-points)
@@ -128,9 +127,9 @@
         (q/ellipse x y 16 16))))
 
 
-  (defn start [raw-points]
+  (defn start [raw-points k-val]
     (q/defsketch example
                  :title "K-means visual"
                  :size [width height]
-                 :setup (fn [] (setup raw-points))
-                 :draw draw))                               ;don't really see a need for key pressed now
+                 :setup (fn [] (setup raw-points k-val))
+                 :draw draw))               ;don't really see a need for key pressed now

@@ -2,9 +2,11 @@
   (:require [kmeans-clojure.csv :as csv]
             [kmeans-clojure.visual :as visual])
   (:import [javax.swing JFrame JButton JLabel JPanel BoxLayout Box BorderFactory]
-           [java.awt Dimension Color Font]))
+           [java.awt Dimension Color Font]
+           [javax.swing JTextField]))
 
-(defonce app-state (atom {:points nil}))
+(defonce app-state (atom {:points nil
+                          :k 3}))                           ;adding k state
 
 (defn is-2d? [points]
   (and (seq points)
@@ -16,6 +18,12 @@
     (str "Points: " (count points)
          " | Dimensions: " (count (first points)))))
 
+(defn parse-k [s]
+  (try
+    (let [n (Integer/parseInt s)]
+      (when (pos? n) n))
+    (catch Exception _ nil)))
+
 (defn create-ui []
   (let [frame (JFrame. "K-Means App")
         root (JPanel.)                                      ; outer panel (background)
@@ -24,7 +32,10 @@
 
         load-btn (JButton. "Load CSV")
         visualize-btn (JButton. "Visualize")
-        info-label (JLabel. "No dataset loaded")]
+        info-label (JLabel. "No dataset loaded")
+
+        k-field (JTextField. "3")
+        k-label (JLabel. "Inser number of clusters (k):")]
 
     ; ===== ROOT PANEL (background) =====
     (.setBackground root (Color. 240 242 245))
@@ -47,6 +58,21 @@
       (.setMaximumSize btn (Dimension. 200 40))
       (.setAlignmentX btn 0.5))
 
+    ; ===== TEXTBOX STYLE =====
+    (doto k-field
+      (.setMaximumSize (Dimension. 120 35))
+      (.setPreferredSize (Dimension. 120 35))
+      (.setFont (Font. "Segoe UI" Font/PLAIN 14))
+      (.setBackground Color/WHITE)
+      (.setForeground (Color. 33 33 33))
+      (.setCaretColor (Color. 66 133 244))
+      (.setHorizontalAlignment JTextField/CENTER)
+      (.setBorder (BorderFactory/createCompoundBorder
+                    (BorderFactory/createLineBorder (Color. 200 200 200) 1 true)
+                    (BorderFactory/createEmptyBorder 5 10 5 10))))
+
+    (.setAlignmentX k-label 0.5)
+    (.setFont k-label (Font. "Arial" Font/PLAIN 14))
 
     (.addActionListener load-btn
                         (proxy [java.awt.event.ActionListener] []
@@ -66,12 +92,22 @@
     (.addActionListener visualize-btn
                         (proxy [java.awt.event.ActionListener] []
                           (actionPerformed [_]
-                            (let [points (:points @app-state)]
-                              (when (and points (seq points))
-                                (visual/start points))))))
+                            (let [points (:points @app-state)
+                                  k (parse-k (.getText k-field))]
+                              (if (nil? k)
+                                (.setText info-label "Invalid K (must be positive integer)")
+                                (do
+                                  (swap! app-state assoc :k k)
+                                  (visual/start points k)))))))
 
     ; label center
     (.setAlignmentX info-label 0.5)
+
+    ; K input row
+    (.add panel (Box/createRigidArea (Dimension. 0 15)))
+    (.add panel k-label)
+    (.add panel (Box/createRigidArea (Dimension. 0 5)))
+    (.add panel k-field)
 
     ; hide visualize initially
     (.setVisible visualize-btn false)
