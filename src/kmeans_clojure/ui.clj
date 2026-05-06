@@ -143,7 +143,8 @@
                             (let [points (:points @app-state)
                                   k (parse-k (.getText k-field))]
                               (when (and points k (is-2d? points))
-                                (visual/start points k))))))
+                                (let [history (:history @app-state)]
+                                  (visual/start history)))))))
 
     ; label center
     (.setAlignmentX info-label 0.5)

@@ -5,7 +5,10 @@
 ;idea is to use quil for visual representation of data
 
 ;introducing atoms
-(defonce state (atom {:points []
+(defonce state (atom {:history []
+                      :step 0
+                      :scaled-history []
+                      :points []
                       :centroids {}
                       :clusters {}  ;adding cluster atom
                       :bounds nil}))
@@ -48,45 +51,54 @@
               (* (- y min-y)
                  (/ (- height (* 2 padding))
                     (max 1 (- max-y min-y)))))]
-    {:x sx :y sy}))
+    [sx sy]))
+
+(defn scale-history [history]
+  ; collect all points once to compute bounds
+  (let [all-points (mapcat (fn [{:keys [clusters]}]
+                             (mapcat identity (vals clusters)))
+                           history)
+        b (bounds all-points)]
+
+    {:bounds b
+     :scaled
+     (mapv
+       (fn [{:keys [centroids clusters] :as step}]
+         {:centroids (mapv (partial scale-point b) centroids)
+          :clusters  (into {}
+                           (for [[c pts] clusters]
+                             [(scale-point b c)
+                              (mapv (partial scale-point b) pts)]))})
+       history)}))
 
 (defn ensure-centroid-colors! [centroids]
   (doseq [c centroids]
     (when-not (contains? @centroid-colors c)
       (swap! centroid-colors assoc c (random-color)))))
 
-(defn setup [raw-points k-val]
-  (let [points-data (if (and raw-points (seq raw-points))
-                      raw-points
-                      (repeatedly point-count
-                                  #(vector (rand-int 100) (rand-int 100)))) ;since csv import should be handled from ui, this need to be able to accept points and csv import should be removed from here
+(defn setup [history]
+  (let [{:keys [bounds scaled]} (scale-history history)
+        k (count (:centroids (first scaled)))]
 
-        ;compute scaling bounds
-        b (bounds points-data)
-
-        ;scale raw points to fit canvas
-        points (vec (map (partial scale-point b) points-data))
-
-        ;convert scaled points into vectors for kmeans
-        point-vecs (mapv point->vec points)
-
-        ;initialize centroids from scaled points
-        centroids (vec (k/init-centroids point-vecs k-val))]
-
-    ;assign stable colors by cluster index
+    ;; stable colors by index
     (reset! centroid-colors
             (into {}
                   (map (fn [i] [i (random-color)])
-                       (range k-val))))
+                       (range k))))
 
-    ;initialize state
-    (reset! state
-            {:points points
-             :centroids centroids
-             :clusters {}
-             :bounds b})
+    (reset! state {:history history
+                   :scaled-history scaled
+                   :step 0
+                   :bounds bounds})
 
-    (q/frame-rate 1)))
+    (q/frame-rate 1)))                                      ;completely rewritten o work only with history data
+
+(defn update-state []
+  (swap! state
+         (fn [{:keys [step scaled-history] :as s}]
+           (let [next-step (min (dec (count scaled-history))
+                                (inc step))]
+             (assoc s :step next-step)))))
 
 (defn update-kmeans []
     (let [current-state @state
@@ -105,31 +117,32 @@
 
   (defn draw []
 
-    (update-kmeans)
+    (update-state)
     (q/background 255)
 
-    (doseq [[idx [centroid pts]]
-            (map-indexed vector
-                         (sort-by (fn [[centroid _]] centroid)
-                                  (:clusters @state)))]
-      (let [color (get @centroid-colors idx [0 0 0])]
-        (apply q/fill color)
-        (q/stroke 0)
-        (doseq [[x y] pts]
-          (q/ellipse x y 8 8))))
+
+    (let [{:keys [scaled-history step]} @state
+          {:keys [centroids clusters]} (nth scaled-history step)]
+
+      (doseq [[idx [centroid pts]]
+              (map-indexed vector clusters)]
+        (let [color (get @centroid-colors idx [0 0 0])]
+          (apply q/fill color)
+          (q/stroke 0)
+          (doseq [[x y] pts]
+            (q/ellipse x y 8 8))))
 
     (doseq [[idx [x y]]
-            (map-indexed vector
-                         (sort-by identity (:centroids @state)))] ;once this is and clusters are sorted, no more random color switches occur
+            (map-indexed vector centroids)] ;once this is and clusters are sorted, no more random color switches occur
       (let [color (get @centroid-colors idx [0 0 0])]       ;with these indexes I am making sure that all the colors of the cluster have the same color, and not just some random one until the end
         (apply q/fill color)
         (q/stroke 0)
-        (q/ellipse x y 16 16))))
+        (q/ellipse x y 16 16)))))
 
 
-  (defn start [raw-points k-val]
+  (defn start [history]
     (q/defsketch example
                  :title "K-means visual"
                  :size [width height]
-                 :setup (fn [] (setup raw-points k-val))
+                 :setup (fn [] (setup history))
                  :draw draw))               ;don't really see a need for key pressed now
