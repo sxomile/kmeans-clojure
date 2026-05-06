@@ -1,9 +1,11 @@
 (ns kmeans-clojure.ui
   (:require [kmeans-clojure.csv :as csv]
+            [kmeans-clojure.kmeans :as k]
             [kmeans-clojure.visual :as visual])
   (:import [javax.swing JFrame JButton JLabel JPanel BoxLayout Box BorderFactory]
            [java.awt Dimension Color Font]
-           [javax.swing JTextField]))
+           [javax.swing JTextField]
+           [javax.swing JTextArea JScrollPane]))
 
 (defonce app-state (atom {:points nil
                           :k 3}))                           ;adding k state
@@ -42,7 +44,10 @@
         info-label (JLabel. "No dataset loaded")
 
         k-field (JTextField. "3")
-        k-label (JLabel. "Inser number of clusters (k):")]
+        k-label (JLabel. "Inser number of clusters (k):")
+
+        text-area (JTextArea.)
+        scroll (JScrollPane. text-area)]
 
     ; ===== ROOT PANEL (background) =====
     (.setBackground root (Color. 240 242 245))
@@ -81,6 +86,13 @@
     (.setAlignmentX k-label 0.5)
     (.setFont k-label (Font. "Arial" Font/PLAIN 14))
 
+    (.setEditable text-area false)
+    (.setLineWrap text-area true)
+    (.setWrapStyleWord text-area true)
+    (.setFont text-area (Font. "Monospaced" Font/PLAIN 12))
+
+    (.setPreferredSize scroll (Dimension. 400 150))
+
     (.addActionListener load-btn
                         (proxy [java.awt.event.ActionListener] []
                           (actionPerformed [_]
@@ -101,10 +113,20 @@
                           (actionPerformed [_]
                             (let [points (:points @app-state)
                                   k (parse-k (.getText k-field))]
-                              (if (nil? k)
-                                (.setText info-label "Invalid K (must be positive integer)")
-                                (do
-                                  (swap! app-state assoc :k k)
+                              (cond
+                                (nil? k)
+                                (.setText info-label "Invalid K")
+                                (> k (count points))
+                                (.setText info-label "K too large")
+
+                                :else
+                                (let [result (k/kmeans-with-history points k 100)
+                                      history (:history result)]
+
+                                  ; show text in UI
+                                  (.setText text-area (format-history history))
+
+                                  ; start visualization
                                   (visual/start points k)))))))
 
     ; label center
@@ -133,6 +155,10 @@
     (.add root (Box/createVerticalGlue))
     (.add root panel)
     (.add root (Box/createVerticalGlue))
+
+    ; panel on bottom for analysis data
+    (.add panel (Box/createRigidArea (Dimension. 0 20)))
+    (.add panel scroll)
 
     ; ===== FRAME =====
     (.add frame root)
