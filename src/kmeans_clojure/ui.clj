@@ -24,6 +24,13 @@
       (when (pos? n) n))
     (catch Exception _ nil)))
 
+(defn format-history [history]
+  (apply str
+         (for [{:keys [iteration centroids cluster-sizes]} history]
+           (str "Iteration " iteration "\n"
+                "Centroids: " centroids "\n"
+                "Cluster sizes: " cluster-sizes "\n\n"))))
+
 (defn create-ui []
   (let [frame (JFrame. "K-Means App")
         root (JPanel.)                                      ; outer panel (background)
@@ -129,7 +136,7 @@
 
     ; ===== FRAME =====
     (.add frame root)
-    (.setSize frame 500 350)
+    (.setSize frame 500 600)
     (.setLocationRelativeTo frame nil)
     (.setDefaultCloseOperation frame JFrame/EXIT_ON_CLOSE)
     (.setVisible frame true)))
