@@ -58,31 +58,41 @@
         scroll (JScrollPane. text-area)]
 
     ; ===== ROOT PANEL (background) =====
-    (.setBackground root (Color. 240 242 245))
+    (.setBackground root (Color. 245 247 250))
     (.setLayout root (BoxLayout. root BoxLayout/Y_AXIS))
 
     ; ===== INNER PANEL (card style) =====
     (.setLayout panel (BoxLayout. panel BoxLayout/Y_AXIS))
     (.setBackground panel Color/WHITE)
-    (.setBorder panel (BorderFactory/createEmptyBorder 20 30 20 30))
-
+    (.setBorder
+      panel
+      (BorderFactory/createCompoundBorder
+        (BorderFactory/createLineBorder (Color. 220 225 230) 1 true)
+        (BorderFactory/createEmptyBorder 30 40 30 40)))
     ; ===== FONTS =====
-    (.setFont info-label (Font. "Arial" Font/PLAIN 14))
+    (.setFont info-label (Font. "Segoe UI" Font/PLAIN 15))
+    (.setForeground info-label (Color. 90 90 90))
 
     ; ===== BUTTON STYLE =====
     (doseq [btn [load-btn run-btn visualize-btn]]
       (.setFocusPainted btn false)
-      (.setFont btn (Font. "Arial" Font/BOLD 14))
-      (.setBackground btn (Color. 66 133 244)) ; blue
+      (.setFont btn (Font. "Segoe UI" Font/BOLD 14))
+      (.setBackground btn (Color. 52 120 246))
       (.setForeground btn Color/WHITE)
-      (.setMaximumSize btn (Dimension. 200 40))
-      (.setAlignmentX btn 0.5))
+      (.setMaximumSize btn (Dimension. 240 45))
+      (.setPreferredSize btn (Dimension. 240 45))
+      (.setAlignmentX btn 0.5)
+      (.setBorder btn (BorderFactory/createEmptyBorder 10 20 10 20)))
+
+    (.setBackground load-btn (Color. 88 101 242))
+    (.setBackground run-btn (Color. 34 197 94))
+    (.setBackground visualize-btn (Color. 249 115 22))
 
     ; ===== TEXTBOX STYLE =====
     (doto k-field
-      (.setMaximumSize (Dimension. 120 35))
-      (.setPreferredSize (Dimension. 120 35))
-      (.setFont (Font. "Segoe UI" Font/PLAIN 14))
+      (.setMaximumSize (Dimension. 160 40))
+      (.setPreferredSize (Dimension. 160 40))
+      (.setFont (Font. "Segoe UI" Font/BOLD 15))
       (.setBackground Color/WHITE)
       (.setForeground (Color. 33 33 33))
       (.setCaretColor (Color. 66 133 244))
@@ -94,12 +104,16 @@
     (.setAlignmentX k-label 0.5)
     (.setFont k-label (Font. "Arial" Font/PLAIN 14))
 
+    ;text area
     (.setEditable text-area false)
     (.setLineWrap text-area true)
     (.setWrapStyleWord text-area true)
-    (.setFont text-area (Font. "Monospaced" Font/PLAIN 12))
+    (.setFont text-area (Font. "Consolas" Font/PLAIN 13))
+    (.setBackground text-area (Color. 250 250 252))
+    (.setForeground text-area (Color. 45 45 45))
+    (.setBorder text-area (BorderFactory/createEmptyBorder 12 12 12 12))
 
-    (.setPreferredSize scroll (Dimension. 400 150))
+    (.setPreferredSize scroll (Dimension. 560 260))
 
     (.addActionListener load-btn
                         (proxy [java.awt.event.ActionListener] []
@@ -197,7 +211,7 @@
 
     ; ===== FRAME =====
     (.add frame root)
-    (.setSize frame 500 600)
+    (.setSize frame 700 760)
     (.setLocationRelativeTo frame nil)
     (.setDefaultCloseOperation frame JFrame/EXIT_ON_CLOSE)
     (.setVisible frame true)))
