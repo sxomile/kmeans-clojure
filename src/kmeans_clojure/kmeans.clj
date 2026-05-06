@@ -112,3 +112,31 @@
              {:clusters clusters
               :centroids new-centroids})
            (recur new-centroids (inc i))))))))
+
+; i need history data in order to be displayed properly on ui
+; si i will write pretty much the same function as kmeans, just with tracking
+
+(defn kmeans-with-history
+  [points k max-iterations]
+  (let [initial-centroids (init-centroids points k)]
+    (loop [centroids initial-centroids
+           i 0
+           history []]
+
+      (let [result (kmeans-step points centroids)
+            clusters (:clusters result)
+            new-centroids (:centroids result)
+
+            step-info {:iteration (inc i)
+                       :centroids new-centroids
+                       :cluster-sizes (mapv count (vals clusters))}]
+
+        (if (or (converged? centroids new-centroids)
+                (>= i max-iterations))
+          {:final {:clusters clusters
+                   :centroids new-centroids}
+           :history (conj history step-info)}
+
+          (recur new-centroids
+                 (inc i)
+                 (conj history step-info)))))))
