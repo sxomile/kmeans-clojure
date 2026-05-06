@@ -140,11 +140,26 @@
     (.addActionListener visualize-btn
                         (proxy [java.awt.event.ActionListener] []
                           (actionPerformed [_]
-                            (let [points (:points @app-state)
+                            (let [{:keys [points history]} @app-state
                                   k (parse-k (.getText k-field))]
-                              (when (and points k (is-2d? points))
-                                (let [history (:history @app-state)]
-                                  (visual/start history)))))))
+                              (cond
+                                (nil? points)
+                                (.setText info-label "Load dataset first")
+
+                                (nil? k)
+                                (.setText info-label "Invalid K")
+
+                                (nil? history)
+                                (.setText info-label "Run algorithm first!")
+
+                                (empty? history)
+                                (.setText info-label "Run algorithm first!")
+
+                                (not (is-2d? points))
+                                (.setText info-label "Visualization only works for 2D data")
+
+                                :else
+                                (visual/start history))))))
 
     ; label center
     (.setAlignmentX info-label 0.5)
