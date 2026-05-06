@@ -76,6 +76,22 @@
     (when-not (contains? @centroid-colors c)
       (swap! centroid-colors assoc c (random-color)))))
 
+(defn key-pressed []
+  (swap! state
+         (fn [{:keys [step scaled-history] :as s}]
+           (let [max-step (dec (count scaled-history))]
+             (cond
+               (= (q/key-as-keyword) :right)
+               (update s :step #(min max-step (inc %)))
+
+               (= (q/key-as-keyword) :left)
+               (update s :step #(max 0 (dec %)))
+
+               (= (q/key-as-keyword) :r) ;; reset
+               (assoc s :step 0)
+
+               :else s)))))
+
 (defn setup [history]
   (let [{:keys [bounds scaled]} (scale-history history)
         k (count (:centroids (first scaled)))]
@@ -117,7 +133,7 @@
 
   (defn draw []
 
-    (update-state)
+    ;(update-state)
     (q/background 255)
 
 
@@ -145,4 +161,5 @@
                  :title "K-means visual"
                  :size [width height]
                  :setup (fn [] (setup history))
-                 :draw draw))               ;don't really see a need for key pressed now
+                 :draw draw
+                 :key-pressed key-pressed))               ;don't really see a need for key pressed now
