@@ -47,6 +47,7 @@
         panel (JPanel.)                                     ;inner panel (card)
 
         load-btn (JButton. "Load CSV")
+        run-btn (JButton. "Run K-Means")
         visualize-btn (JButton. "Visualize")
         info-label (JLabel. "No dataset loaded")
 
@@ -69,7 +70,7 @@
     (.setFont info-label (Font. "Arial" Font/PLAIN 14))
 
     ; ===== BUTTON STYLE =====
-    (doseq [btn [load-btn visualize-btn]]
+    (doseq [btn [load-btn run-btn visualize-btn]]
       (.setFocusPainted btn false)
       (.setFont btn (Font. "Arial" Font/BOLD 14))
       (.setBackground btn (Color. 66 133 244)) ; blue
@@ -151,6 +152,9 @@
     ; ===== LAYOUT =====
     (.add panel (Box/createRigidArea (Dimension. 0 10)))
     (.add panel load-btn)
+
+    (.add panel (Box/createRigidArea (Dimension. 0 15)))
+    (.add panel run-btn)
 
     (.add panel (Box/createRigidArea (Dimension. 0 20)))
     (.add panel info-label)
