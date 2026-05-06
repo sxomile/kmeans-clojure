@@ -28,10 +28,17 @@
 
 (defn format-history [history]
   (apply str
-         (for [{:keys [iteration centroids cluster-sizes]} history]
+         (for [{:keys [iteration centroids clusters]} history]
            (str "Iteration " iteration "\n"
-                "Centroids: " centroids "\n"
-                "Cluster sizes: " cluster-sizes "\n\n"))))
+                "Centroids:\n"
+                (apply str (map #(str "  " % "\n") centroids))
+                "\nClusters:\n"
+                (apply str
+                       (for [[centroid pts] clusters]
+                         (str "  Centroid " centroid "\n"
+                              (apply str (map #(str "    " % "\n") pts))
+                              "\n")))
+                "\n----------------------------------\n\n"))))
 
 (defn create-ui []
   (let [frame (JFrame. "K-Means App")

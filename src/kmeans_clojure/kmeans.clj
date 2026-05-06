@@ -129,6 +129,7 @@
 
             step-info {:iteration (inc i)
                        :centroids new-centroids
+                       :clusters clusters
                        :cluster-sizes (mapv count (vals clusters))}]
 
         (if (or (converged? centroids new-centroids)
