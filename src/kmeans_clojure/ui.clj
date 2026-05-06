@@ -116,26 +116,34 @@
                                   (.setText info-label "No dataset loaded")
                                   (.setVisible visualize-btn false)))))))
 
-    (.addActionListener visualize-btn
+    (.addActionListener run-btn
                         (proxy [java.awt.event.ActionListener] []
                           (actionPerformed [_]
                             (let [points (:points @app-state)
                                   k (parse-k (.getText k-field))]
                               (cond
+                                (nil? points)
+                                (.setText info-label "Load dataset first")
+
                                 (nil? k)
                                 (.setText info-label "Invalid K")
+
                                 (> k (count points))
                                 (.setText info-label "K too large")
 
                                 :else
                                 (let [result (k/kmeans-with-history points k 100)
                                       history (:history result)]
+                                  (swap! app-state assoc :history history)
+                                  (.setText text-area (format-history history))))))))
 
-                                  ; show text in UI
-                                  (.setText text-area (format-history history))
-
-                                  ; start visualization
-                                  (visual/start points k)))))))
+    (.addActionListener visualize-btn
+                        (proxy [java.awt.event.ActionListener] []
+                          (actionPerformed [_]
+                            (let [points (:points @app-state)
+                                  k (parse-k (.getText k-field))]
+                              (when (and points k (is-2d? points))
+                                (visual/start points k))))))
 
     ; label center
     (.setAlignmentX info-label 0.5)
