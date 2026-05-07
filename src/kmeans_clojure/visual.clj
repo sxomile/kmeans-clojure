@@ -1,6 +1,5 @@
 (ns kmeans-clojure.visual
-  (:require [quil.core :as q]
-            [kmeans-clojure.kmeans :as k]))
+  (:require [quil.core :as q]))
 
 ;idea is to use quil for visual representation of data
 
@@ -16,13 +15,6 @@
 
 (def width 500)
 (def height 400)
-(def point-count 40)
-
-(defn point->vec [{:keys [x y]}]
-  [x y])                                                    ;algo expects vectors
-
-(defn vec->point [[x y]]
-  {:x x :y y})
 
 (defn random-color []
   [(rand-int 256) (rand-int 256) (rand-int 256)])
@@ -34,11 +26,6 @@
      :max-x (apply max xs)
      :min-y (apply min ys)
      :max-y (apply max ys)}))
-
-;for now i want points to actually be random, width and height are now variables, so the dots don't escape the window
-(defn random-point []
-  {:x (rand-int width)
-   :y (rand-int height)})
 
 (defn scale-point                                           ;need to scale points in order to display proportionally
   [{:keys [min-x max-x min-y max-y]} [x y]]
@@ -70,11 +57,6 @@
                              [(scale-point b c)
                               (mapv (partial scale-point b) pts)]))})
        history)}))
-
-(defn ensure-centroid-colors! [centroids]
-  (doseq [c centroids]
-    (when-not (contains? @centroid-colors c)
-      (swap! centroid-colors assoc c (random-color)))))
 
 (defn key-pressed []
   (swap! state
@@ -116,20 +98,6 @@
                                 (inc step))]
              (assoc s :step next-step)))))
 
-(defn update-kmeans []
-    (let [current-state @state
-          fixed-points (:points current-state)
-          point-vectors (mapv point->vec fixed-points)
-          result (k/kmeans-step point-vectors
-                                (:centroids current-state))
-          new-centroids (:centroids result)
-          clusters (:clusters result)]
-      (ensure-centroid-colors! new-centroids)
-      (reset! state
-              {:points    fixed-points
-               :centroids new-centroids
-               :clusters  clusters
-               :bounds (:bounds current-state)})))
 
   (defn draw []
 
@@ -162,4 +130,4 @@
                  :size [width height]
                  :setup (fn [] (setup history))
                  :draw draw
-                 :key-pressed key-pressed))               ;don't really see a need for key pressed now
+                 :key-pressed key-pressed))
