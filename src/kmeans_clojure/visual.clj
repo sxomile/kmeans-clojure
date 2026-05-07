@@ -123,7 +123,21 @@
       (let [color (get @centroid-colors idx [0 0 0])]       ;with these indexes I am making sure that all the colors of the cluster have the same color, and not just some random one until the end
         (apply q/fill color)
         (q/stroke 0)
-        (q/ellipse x y 16 16)))))
+        (q/ellipse x y 16 16))))
+
+    (let [{:keys [step scaled-history auto-play?]} @state]
+      (q/fill 0)
+      (q/text-size 14)
+
+      (if auto-play?
+        (q/text "Animation running..." 10 20)
+        (q/text "← Previous    → Next    R Restart" 10 20))
+
+      (q/text
+        (str "Step: " (inc step)
+             "/" (count scaled-history))
+        10
+        40)))
 
 
   (defn start [history]
