@@ -91,7 +91,7 @@
                    :auto-play? true
                    :bounds bounds})
 
-    (q/frame-rate 1)))                                      ;completely rewritten o work only with history data
+    (q/frame-rate 2)))                                      ;completely rewritten o work only with history data
 
   (defn draw []
 

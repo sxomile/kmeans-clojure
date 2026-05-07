@@ -22,9 +22,6 @@
   ([file has-header?]
    (with-open [reader (io/reader file)]
      (let [data (csv->points reader has-header?)]
-       (println "Loaded points:")
-       (doseq [row data]
-         (println row))                                     ;in order to check if it loads data properly
        data))))
 
 ;; open file chooser dialog for selecting CSV file, making sure only csv can be selected
