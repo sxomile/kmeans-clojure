@@ -52,7 +52,7 @@
         info-label (JLabel. "No dataset loaded")
 
         k-field (JTextField. "3")
-        k-label (JLabel. "Inser number of clusters (k):")
+        k-label (JLabel. "Insert number of clusters (k):")
 
         text-area (JTextArea.)
         scroll (JScrollPane. text-area)]

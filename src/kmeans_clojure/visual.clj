@@ -6,6 +6,7 @@
 ;introducing atoms
 (defonce state (atom {:history []
                       :step 0
+                      :auto-play? true
                       :scaled-history []
                       :points []
                       :centroids {}
@@ -87,17 +88,10 @@
     (reset! state {:history history
                    :scaled-history scaled
                    :step 0
+                   :auto-play? true
                    :bounds bounds})
 
     (q/frame-rate 1)))                                      ;completely rewritten o work only with history data
-
-(defn update-state []
-  (swap! state
-         (fn [{:keys [step scaled-history] :as s}]
-           (let [next-step (min (dec (count scaled-history))
-                                (inc step))]
-             (assoc s :step next-step)))))
-
 
   (defn draw []
 
@@ -105,8 +99,16 @@
     (q/background 255)
 
 
-    (let [{:keys [scaled-history step]} @state
-          {:keys [centroids clusters]} (nth scaled-history step)]
+    (let [{:keys [scaled-history step auto-play?]} @state
+          {:keys [centroids clusters]} (nth scaled-history step)
+          last-step (dec (count scaled-history))]
+
+      (when auto-play?
+        (swap! state
+               (fn [s]
+                 (if (< step last-step)
+                   (update s :step inc)
+                   (assoc s :auto-play? false)))))
 
       (doseq [[idx [centroid pts]]
               (map-indexed vector clusters)]
