@@ -31,7 +31,7 @@ The algorithm attempts to minimize the distance between points and their assigne
 
 Interface looks like simple java swing form:
 
-<img src="readme_img/interace_preview.png" width="60%" height="60%">
+<img src="readme_img/interace_preview.png" width="30%" height="30%">
 
 Form consists of the following elements:
 
