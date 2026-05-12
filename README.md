@@ -68,7 +68,6 @@ User can now use visualize button as well to see the animation of the algo run. 
 
 Example of animation and navigation through steps:
 
-![](blob\visualization.gif)
 
 If the data is n-dimensional, where n is whole number and n > 2, algorithm details will be displayed, but visualization will be disabled.
 
