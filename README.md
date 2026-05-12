@@ -31,7 +31,7 @@ The algorithm attempts to minimize the distance between points and their assigne
 
 Interface looks like simple java swing form:
 
-![](readme_img\interace_preview.png)
+![](readme_img/interace_preview.png)
 
 Form consists of the following elements:
 
@@ -42,23 +42,23 @@ Form consists of the following elements:
 - Text area -> outputs details of the algorithm run;
 - Hidden "Visualize" button -> shown only when 2d dataset is loaded. Displays animation of the algorithm and enables user to move through each iteration of K-Means. Complete form with hidden button will be shown in image below.
 
-![](readme_img\interface_preview_full.png)
+![](readme_img/interface_preview_full.png)
 
 ## Application Workflow
 
 When user runs app, the form shows up:
 
-![](readme_img\interace_preview.png)
+![](readme_img/interace_preview.png)
 
 In the input field user chooses the number of centroids they want. In this example I will keep 3. This data can be modified at any moment.
 
 In order to run the algorithm, user needs to click "Load CSV" button to load data. Clicking the buttons opens swing-style window that enables them to select file from their local machine:
 
-![](readme_img\csv_load.png)
+![](readme_img/csv_load.png)
 
 Since loaded data is 2-dimensional, the "Visulaize" button shows up. The label informs user that 300 points are loaded, and that data is 2d.
 
-![](readme_img\interface_preview_full.png)
+![](readme_img/interface_preview_full.png)
 
 By clicking "Run K-Means" button, the algorithm is run and details are displayed in text area.
 
@@ -68,28 +68,29 @@ User can now use visualize button as well to see the animation of the algo run. 
 
 Example of animation and navigation through steps:
 
+![](blob/visualization.gif)
 
 If the data is n-dimensional, where n is whole number and n > 2, algorithm details will be displayed, but visualization will be disabled.
 
 Example of 3d case:
 
-![](readme_img\algorithm_run_3d.png)
+![](readme_img/algorithm_run_3d.png)
 
 ### Edge cases
 
 1. User uses invalid data in input field:
 
-![](readme_img\invalid_k.png)
+![](readme_img/invalid_k.png)
 
 2. User tries to run algorithm before loading anything:
 
-![](readme_img\no_dataset.png)
+![](readme_img/no_dataset.png)
 
 3. User tries to load non-csv type of file -> this edge case is covered in way that explorer won't display anything but csv files for user.
 
 4. User tries to visualize data before running the algorithm:
 
-![](readme_img\visualize_before_running.png)
+![](readme_img/visualize_before_running.png)
 
 
 
