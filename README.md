@@ -7,7 +7,7 @@
 - [Application Interface Overview](#application-interface-overview)
 - [Application Workflow](#application-workflow)
   - [Edge cases](#edge-cases)
-- [Implementation](#implementation)
+- [Implementation process](#implementation-process)
 - [Tech Stack Overview](#tech-stack-overview)
 - [Possible future improvements](#possible-future-improvements)
 
@@ -103,7 +103,7 @@ Example of 3d case:
 
 <img src="readme_img/visualize_before_running.png" width="30%" height="30%">
 
-## Implementation
+## Implementation process
 
 Application was developed in 4 stages:
 
