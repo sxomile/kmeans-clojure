@@ -92,5 +92,101 @@ Example of 3d case:
 
 <img src="readme_img/visualize_before_running.png" width="30%" height="30%">
 
-## Development
+## Development process
 
+Application was developed in 4 stages:
+
+1. Development of algorithm logic
+2. Development of CSV import
+3. Development of visuals/animaions
+4. Development of UI
+
+During development, some previously completed stages had to be modified to ensure proper integration with the rest of the application. However, this was the general order of implementation.
+
+### 1. Development of algorithm logic
+
+Algorithm logic development was completely **test-driven**, using **Midje** framework. This means that the tests were written before any specific function, and then the functions would be checked without need to run them in repl.
+
+Algorithm logic is implemented inside of kmeans.clj file, and consists of 11 pure functions:
+
+1. distance -> calculates euclidean distance between 2 points;
+2. nearest-centroid -> assigns a point to the nearest centroid;
+3. assign-clusters -> groups points in their nearest centroid, uses nearest-centroid as helper;
+4. mean -> calculates mean, useful for recalculating centroids;
+5. mean-point -> calculates mean of specific points, uses mean as helper;
+6. recompute-centroids -> recomputes centroids;
+7. converged? -> checks if algorithm converged;
+8. init-centroids -> initializes centroids for the first iteration;
+9. kmeans-step -> completes one step of K-Means algorithm (assign, then recompute);
+10. kmeans -> orchestrates all of the functions for one complete run of algorithm. Currently unused because it doesn't quite fit what we need to pass to the UI, but was useful to see how algo works before UI was present;
+11. kmeans-with-history -> almost the same as kmeans, but keeps track of historical data and is compatible with UI.
+
+Tests are inside of kmeans_test.clj file and can be run in terminal through command **lein midje**.
+
+### 2. Development of CSV import
+
+This phase started off as test-driven, but as soon as java.io was present and functions stopped being pure it didn't seems to make sense. The dialogs couldn't even be run from REPL, no matter what I tried, so I decided to manually test the rest of the logic via console, by directly running the app.
+
+Logic is inside of csv.clj file, and consists of 5 functions:
+
+1. parse-row -> parses vector of numbers to double;
+2. csv->points -> parses csv file to set of points;
+3. load-points-from-file -> loads points directly from given file;
+4. choose-csv-file -> opening dialog that enables user to only be able to select csv files;
+5. load-points-via-dialog -> integrates all the functions above to enable user to select csv via dialog and load it in application.
+
+Tests are written in csv_test file and can be run in terminal through command **lein midje**.
+
+### 3. Development of visuals/animaions
+
+Logic for this segment was developed in visual.clj file. This file went through the biggest amount of changes since initial development, after the UI was present.
+
+Visuals are developed using **quil** library. The file is formatted in a similar fashion as it is displayed on quil github page, with many different helper functions added or removed along the way.
+
+In the initial version visuals worked with some random points, then it worked with actual kmeans algorithm. After UI was added, there was an issue where UI ran its own K-Means, while visuals run K-Means of their own, so later visuals were completely redefined to display just historical data that it is given from UI. Visuals use atoms to keep track of the variable states.
+
+Visual.clj consists of 8 functions:
+
+1. random-color -> defines random color. Centroids are each given some random color;
+2. bounds -> defines bounds of visual screen. Useful for scaling points from their regular value to size of that window;
+3. scale-history -> scales historical data to the window size;
+4. key-pressed -> updates different states based on key pressed. Useful for navigating through steps of animation;
+5. setup -> defines setup. Standard practice in quil;
+6. draw -> defines how function will draw points, also standard part of quil;
+7. start -> starts animation, regular part of quil.
+
+### 4. Development of UI
+
+UI is developed using Java Swing library. UI code is in ui.clj file, and is invoked in main function, which is in core.clj.
+
+Even though UI code seems relatively big, it mostly consists of element ordering and design settings, along with consumption of functions from above defined files. For this reason, I will not list functions for this part.
+
+It keeps the state of history data, which it gets from kmeans-with-history, and k variable, which it gets from input field on the form.
+
+## Tech stack overview
+
+The application is built using the following technologies and libraries:
+
+- Clojure -> core programming language;
+- Leiningen -> project management and dependency handling;
+- Quil -> visualization and animation of K-Means iterations;
+- Java Swing -> graphical user interface (GUI)
+- Midje -> test-driven development and unit testing
+- clojure.data.csv -> CSV parsing and dataset loading
+- java.io -> file handling
+
+## Possible Future Improvements
+
+Potential future improvements for the application include:
+
+- Interactive visualization controls through UI buttons instead of keyboard navigation
+- More detailed representation of data on visual screen
+- Real-time centroid dragging and manipulation
+- Improved visualization styling and animations
+- Dataset normalization and preprocessing support
+- Automatic K selection methods, like Elbow Method
+- Exporting clustering results to CSV
+- Better optimized handling for large datasets
+- 3D visualization support
+- N-dimensional visualization support (comparing 2-3 desired variables)
+- Displaying statistical metrics for clustering quality
