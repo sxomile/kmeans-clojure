@@ -4,11 +4,17 @@
 
 - [Overview](#overview)
 - [About K-Means Clustering](#about-k-means-clustering)
+- [Running the application](#running-the-application)
+- [Dataset format](#dataset-format)
 - [Application Interface Overview](#application-interface-overview)
 - [Application Workflow](#application-workflow)
   - [Edge cases](#edge-cases)
 - [Implementation process](#implementation-process)
+- [Project structure](#project-structure)
 - [Tech Stack Overview](#tech-stack-overview)
+- [Challenges during development](#challenges-during-development)
+- [Performance considerations](#performance-considerations)
+- [Known limitations](#known-limitations)
 - [Possible future improvements](#possible-future-improvements)
 
 ## Overview
@@ -37,6 +43,38 @@ The process is iterative and consists of the following steps:
 4. Repeat from step 2 until convergence
 
 The algorithm attempts to minimize the distance between points and their assigned centroids.
+
+## Running the application
+
+1. Clone repository to the local machine
+2. Install Leiningen
+3. Run command: **lein run**
+
+To run tests, use command: **lein midje**
+
+## Dataset Format
+
+Datasets must be provided in CSV format with headers. All values inside dataset are expected to be numeric.
+
+Example of valid 2D dataset:
+
+x,y
+
+1.0,2.0
+
+2.5,3.1
+
+4.2,1.9
+
+Example of valid 3D dataset:
+
+x,y,z
+
+1.0,2.0,3.0
+
+4.1,5.2,6.3
+
+Each row represents one point, while each column represents one dimension.
 
 ## Application interface overview
 
@@ -154,6 +192,10 @@ Logic for this segment was developed in visual.clj file. This file went through 
 
 Visuals are developed using **quil** library. The file is formatted in a similar fashion as it is displayed on quil github page, with many different helper functions added or removed along the way.
 
+Each iteration of the algorithm is stored as historical state data containing centroid positions and cluster assignments.
+
+Visualization replays this stored history frame-by-frame, allowing the user to observe how clusters evolve during convergence.
+
 In the initial version visuals worked with some random points, then it worked with actual kmeans algorithm. After UI was added, there was an issue where UI ran its own K-Means, while visuals run K-Means of their own, so later visuals were completely redefined to display just historical data that it is given from UI. Visuals use atoms to keep track of the variable states.
 
 Visual.clj consists of 8 functions:
@@ -174,6 +216,23 @@ Even though UI code seems relatively big, it mostly consists of element ordering
 
 It keeps the state of history data, which it gets from kmeans-with-history, and k variable, which it gets from input field on the form.
 
+## Project Structure
+
+Project is organized into several core files and directories, out of which essential are:
+
+- kmeans-clojure
+  - src
+    - kmeans-clojure
+      - core.clj -> application entry point
+      - ui.clj -> Swing user interface
+      - kmeans.clj -> K-Means algorithm implementation
+      - visual.clj -> visualization and animation logic
+      - csv.clj -> CSV import and parsing
+  - test
+    - kmeans-clojure
+      - kmeans_test.clj -> tests for algorithm logic
+      - csv_test.clj -> tests for CSV loading logic (specifically parsing data)
+
 ## Tech stack overview
 
 The application is built using the following technologies and libraries:
@@ -185,6 +244,36 @@ The application is built using the following technologies and libraries:
 - Midje -> test-driven development and unit testing
 - clojure.data.csv -> CSV parsing and dataset loading
 - java.io -> file handling
+
+## Challenges During Development
+
+Several issues appeared during development, some of which are:
+
+- Synchronizing UI state with visualization state
+- Passing historical algorithm data to visualization
+- Scaling data points correctly for different datasets
+- Separating visualization logic from algorithm logic
+
+The biggest challenge was redesigning visualization so it would no longer execute its own K-Means logic independently from the UI.
+
+## Performance Considerations
+
+Current implementation works well for smaller and medium-sized datasets.
+
+For very large datasets, performance decreases because:
+- every iteration recalculates distances for all points
+- visualization stores complete iteration history
+- rendering large number of points becomes slower
+
+Possible future optimization could include parallel processing or reducing stored history data.
+
+## Known Limitations
+
+- Visualization currently supports only 2D datasets
+- Initial centroid selection is random
+- Large datasets can reduce visualization performance
+- No dataset normalization is currently implemented
+- UI design is intentionally simple and utility-focused
 
 ## Possible Future Improvements
 
