@@ -31,5 +31,7 @@ The algorithm attempts to minimize the distance between points and their assigne
 
 Interface looks like simple form with one input field and couple of buttons:
 
+![](C:\Users\PC\dev\dressing\kmeans-clojure\readme_img\interace_preview.png)
+
 
 
