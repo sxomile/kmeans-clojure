@@ -1,5 +1,16 @@
 # Clojure K-Means implementation
 
+## Table of contents
+
+- [Overview](#overview)
+- [About K-Means Clustering](#about-k-means-clustering)
+- [Application Interface Overview](#application-interface-overview)
+- [Application Workflow](#application-workflow)
+  - [Edge cases](#edge-cases)
+- [Implementation](#implementation)
+- [Tech Stack Overview](#tech-stack-overview)
+- [Possible future improvements](#possible-future-improvements)
+
 ## Overview
 
 This project is an implementation of the K-Means clustering algorithm written in Clojure.
@@ -92,7 +103,7 @@ Example of 3d case:
 
 <img src="readme_img/visualize_before_running.png" width="30%" height="30%">
 
-## Development process
+## Implementation
 
 Application was developed in 4 stages:
 
